@@ -7,9 +7,12 @@ import { EtoileOrange, EtoileBleu, Soleil, DemiSoleil, CourbePeche, OndeVerte } 
 export default async function Accueil() {
   const today = new Date().toISOString().split("T")[0];
 
-  const [{ recettes }, { evenements: prochainsEvenements }] = await Promise.all([
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+
+  const [{ recettes }, { evenements: prochainsEvenements }, { evenements: eventsPasses }] = await Promise.all([
     fetchRecettes({ limit: 6, status: "publiee" }),
     fetchEvenements({ limit: 3, date_from: today, sort_by: "event_date", sort_order: "asc" }),
+    fetchEvenements({ limit: 3, date_to: yesterday, sort_by: "event_date", sort_order: "desc" }),
   ]);
   return (
     <>
@@ -96,6 +99,43 @@ export default async function Accueil() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {prochainsEvenements.map((evt) => (
                 <EvenementCard key={evt.id} evenement={evt} />
+              ))}
+            </div>
+            <div className="sm:hidden mt-6 text-center">
+              <Link
+                href="/evenements"
+                className="text-sm font-semibold text-orange"
+              >
+                Voir tous les événements &rarr;
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Événements passés */}
+      {eventsPasses.length > 0 && (
+        <section className="py-16 sm:py-20 bg-white/40">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <h2 className="font-serif text-3xl sm:text-4xl text-brun-light">
+                  Événements passés
+                </h2>
+                <p className="mt-2 text-brun-light/70">
+                  Retour sur nos dernières rencontres
+                </p>
+              </div>
+              <Link
+                href="/evenements"
+                className="hidden sm:inline-flex text-sm font-semibold text-orange hover:text-orange-light transition-colors"
+              >
+                Voir tous les événements &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {eventsPasses.map((evt) => (
+                <EvenementCard key={evt.id} evenement={evt} variant="past" />
               ))}
             </div>
             <div className="sm:hidden mt-6 text-center">
