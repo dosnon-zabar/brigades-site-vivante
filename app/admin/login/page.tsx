@@ -10,8 +10,17 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
+        <a
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs text-brun-light/50 hover:text-brun-light transition-colors mb-8"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Retour au site
+        </a>
         <div className="text-center mb-8">
           <EtoileOrange className="w-10 h-10 mx-auto mb-4" />
           <h1 className="font-serif text-3xl text-brun">Administration</h1>
