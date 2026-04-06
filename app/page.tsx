@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { evenements as mockEvenements } from "@/data/evenements";
 import { fetchRecettes, fetchEvenements } from "@/lib/api";
 import RecetteCard from "@/components/RecetteCard";
 import EvenementCard from "@/components/EvenementCard";
@@ -8,14 +7,10 @@ import { EtoileOrange, EtoileBleu, Soleil, DemiSoleil, CourbePeche, OndeVerte } 
 export default async function Accueil() {
   const today = new Date().toISOString().split("T")[0];
 
-  const [{ recettes }, { evenements: apiEvenements }] = await Promise.all([
+  const [{ recettes }, { evenements: prochainsEvenements }] = await Promise.all([
     fetchRecettes({ limit: 6, status: "publiee" }),
     fetchEvenements({ limit: 3, date_from: today, sort_by: "event_date", sort_order: "asc" }),
   ]);
-
-  // Fallback sur les données mockées si pas d'events dans l'API
-  const mockAVenir = mockEvenements.filter((e) => !e.est_passe).slice(0, 3);
-  const prochainsEvenements = apiEvenements.length > 0 ? apiEvenements : mockAVenir;
   return (
     <>
       {/* Hero — fond clair avec motifs décoratifs */}
@@ -75,43 +70,45 @@ export default async function Accueil() {
         </div>
       </section>
 
-      {/* Prochains événements */}
-      <section className="py-16 sm:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex items-end justify-between mb-10">
-            <div className="flex items-center gap-3">
-              <EtoileOrange className="w-7 h-7 hidden sm:block" />
-              <div>
-                <h2 className="font-serif text-3xl sm:text-4xl text-brun">
-                  Prochains événements
-                </h2>
-                <p className="mt-2 text-brun-light">
-                  Retrouvez-nous autour d&apos;une table
-                </p>
+      {/* Prochains événements — masqué si aucun */}
+      {prochainsEvenements.length > 0 && (
+        <section className="py-16 sm:py-20">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="flex items-end justify-between mb-10">
+              <div className="flex items-center gap-3">
+                <EtoileOrange className="w-7 h-7 hidden sm:block" />
+                <div>
+                  <h2 className="font-serif text-3xl sm:text-4xl text-brun">
+                    Prochains événements
+                  </h2>
+                  <p className="mt-2 text-brun-light">
+                    Retrouvez-nous autour d&apos;une table
+                  </p>
+                </div>
               </div>
+              <Link
+                href="/evenements"
+                className="hidden sm:inline-flex text-sm font-semibold text-orange hover:text-orange-light transition-colors"
+              >
+                Voir tout &rarr;
+              </Link>
             </div>
-            <Link
-              href="/evenements"
-              className="hidden sm:inline-flex text-sm font-semibold text-orange hover:text-orange-light transition-colors"
-            >
-              Voir tout &rarr;
-            </Link>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {prochainsEvenements.map((evt) => (
+                <EvenementCard key={evt.id} evenement={evt} />
+              ))}
+            </div>
+            <div className="sm:hidden mt-6 text-center">
+              <Link
+                href="/evenements"
+                className="text-sm font-semibold text-orange"
+              >
+                Voir tous les événements &rarr;
+              </Link>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {prochainsEvenements.map((evt) => (
-              <EvenementCard key={evt.id} evenement={evt} />
-            ))}
-          </div>
-          <div className="sm:hidden mt-6 text-center">
-            <Link
-              href="/evenements"
-              className="text-sm font-semibold text-orange"
-            >
-              Voir tous les événements &rarr;
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Nos recettes */}
       <section className="py-16 sm:py-20 bg-white/60">
