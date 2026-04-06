@@ -11,13 +11,14 @@ export async function createMemberAction(
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
+  const roleIds = formData.getAll("role_ids") as string[];
   const data = {
     first_name: formData.get("first_name") as string,
     last_name: formData.get("last_name") as string,
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     phone: (formData.get("phone") as string) || undefined,
-    role_id: (formData.get("role_id") as string) || undefined,
+    role_id: roleIds[0] || undefined, // Premier rôle coché pour la création
   };
 
   if (!data.first_name || !data.last_name || !data.email || !data.password) {
@@ -47,7 +48,7 @@ export async function updateMemberAction(
   const lastName = formData.get("last_name") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
-  const roleId = formData.get("role_id") as string;
+  const roleIds = formData.getAll("role_ids") as string[];
   const password = formData.get("password") as string;
   const active = formData.get("active");
 
@@ -55,7 +56,7 @@ export async function updateMemberAction(
   if (lastName) data.last_name = lastName;
   if (email) data.email = email;
   if (phone !== null) data.phone = phone || null;
-  if (roleId) data.role_id = roleId;
+  data.role_ids = roleIds; // Toujours envoyer les rôles cochés (même tableau vide)
   if (password) data.password = password;
   if (active !== null) data.active = active === "true";
 

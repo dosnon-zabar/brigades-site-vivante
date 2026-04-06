@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { createMemberAction } from "../actions";
 
-type Role = { id: string; name: string };
+type Role = { id: string; name: string; description: string };
 
 export default function NouveauMembrePage() {
   const [state, formAction, pending] = useActionState(createMemberAction, null);
@@ -62,15 +62,28 @@ export default function NouveauMembrePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-brun mb-1">Rôle</label>
-          <select name="role_id" className="w-full px-3 py-2.5 rounded-lg border border-brun/10 bg-creme text-sm text-brun focus:outline-none focus:ring-2 focus:ring-orange/30">
-            <option value="">Contributeur (par défaut)</option>
-            {roles.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name.charAt(0).toUpperCase() + r.name.slice(1)}
-              </option>
-            ))}
-          </select>
+          <label className="block text-sm font-medium text-brun mb-2">Rôles</label>
+          {roles.length > 0 ? (
+            <div className="space-y-2">
+              {roles.map((role) => (
+                <label key={role.id} className="flex items-center gap-2 text-sm text-brun cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="role_ids"
+                    value={role.id}
+                    defaultChecked={role.name === "contributeur"}
+                    className="rounded border-brun/20 text-orange focus:ring-orange/30"
+                  />
+                  {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                  {role.description && (
+                    <span className="text-brun-light/60 text-xs">— {role.description}</span>
+                  )}
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-brun-light/60">Chargement des rôles...</p>
+          )}
         </div>
 
         <button

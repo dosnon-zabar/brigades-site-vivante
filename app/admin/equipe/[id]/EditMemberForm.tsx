@@ -12,9 +12,11 @@ type Props = {
 export default function EditMemberForm({ member, roles }: Props) {
   const [state, formAction, pending] = useActionState(updateMemberAction, null);
 
-  const currentRoleId = member.roles.find((r) =>
-    ["contributeur", "traiteur"].includes(r.name)
-  )?.id;
+  // Rôles assignables actuellement cochés
+  const assignableRoleNames = roles.map((r) => r.name);
+  const currentAssignableRoleIds = member.roles
+    .filter((r) => assignableRoleNames.includes(r.name))
+    .map((r) => r.id);
 
   return (
     <form action={formAction} className="bg-white rounded-xl p-6 shadow-sm space-y-4">
@@ -82,32 +84,34 @@ export default function EditMemberForm({ member, roles }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-brun mb-1">Rôle</label>
-        <select
-          name="role_id"
-          defaultValue={currentRoleId || ""}
-          className="w-full px-3 py-2.5 rounded-lg border border-brun/10 bg-creme text-sm text-brun focus:outline-none focus:ring-2 focus:ring-orange/30"
-        >
-          {roles.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name.charAt(0).toUpperCase() + r.name.slice(1)}
-            </option>
+        <label className="block text-sm font-medium text-brun mb-2">Rôles</label>
+        <div className="space-y-2">
+          {roles.map((role) => (
+            <label key={role.id} className="flex items-center gap-2 text-sm text-brun cursor-pointer">
+              <input
+                type="checkbox"
+                name="role_ids"
+                value={role.id}
+                defaultChecked={currentAssignableRoleIds.includes(role.id)}
+                className="rounded border-brun/20 text-orange focus:ring-orange/30"
+              />
+              {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+              {role.description && (
+                <span className="text-brun-light/60 text-xs">— {role.description}</span>
+              )}
+            </label>
           ))}
-        </select>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <input
-          type="hidden"
-          name="active"
-          value={member.active ? "true" : "false"}
-        />
+        <input type="hidden" name="active" value={member.active ? "true" : "false"} />
         <label className="flex items-center gap-2 text-sm text-brun cursor-pointer">
           <input
             type="checkbox"
             defaultChecked={member.active}
             onChange={(e) => {
-              const hidden = e.target.parentElement?.parentElement?.querySelector(
+              const hidden = e.target.closest("form")?.querySelector(
                 'input[name="active"]'
               ) as HTMLInputElement;
               if (hidden) hidden.value = e.target.checked ? "true" : "false";
