@@ -4,7 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { fetchTeamMembers } from "@/lib/api";
-import { removeMemberAction } from "./actions";
+import RemoveMemberButton from "@/components/RemoveMemberButton";
 
 export default async function AdminEquipePage() {
   const session = await getSession();
@@ -75,20 +75,7 @@ export default async function AdminEquipePage() {
                   >
                     Modifier
                   </Link>
-                  <form action={removeMemberAction} className="inline">
-                    <input type="hidden" name="user_id" value={m.id} />
-                    <button
-                      type="submit"
-                      className="text-xs text-brun-light hover:text-rose"
-                      onClick={(e) => {
-                        if (!confirm(`Retirer ${m.first_name} ${m.last_name} de l'équipe ?`)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    >
-                      Retirer
-                    </button>
-                  </form>
+                  <RemoveMemberButton userId={m.id} name={`${m.first_name} ${m.last_name}`} />
                 </td>
               </tr>
             ))}
