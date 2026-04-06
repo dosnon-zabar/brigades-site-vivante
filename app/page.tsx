@@ -1,17 +1,21 @@
 import Link from "next/link";
-import { evenements } from "@/data/evenements";
-import { fetchRecettes } from "@/lib/api";
+import { evenements as mockEvenements } from "@/data/evenements";
+import { fetchRecettes, fetchEvenements } from "@/lib/api";
 import RecetteCard from "@/components/RecetteCard";
 import EvenementCard from "@/components/EvenementCard";
 import { EtoileOrange, EtoileBleu, Soleil, DemiSoleil, CourbePeche, OndeVerte } from "@/components/Motifs";
 
-const prochainsEvenements = evenements
-  .filter((e) => e.statut === "a_venir")
-  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  .slice(0, 3);
-
 export default async function Accueil() {
-  const { recettes } = await fetchRecettes({ limit: 6, status: "publiee" });
+  const today = new Date().toISOString().split("T")[0];
+
+  const [{ recettes }, { evenements: apiEvenements }] = await Promise.all([
+    fetchRecettes({ limit: 6, status: "publiee" }),
+    fetchEvenements({ limit: 3, date_from: today, sort_by: "event_date", sort_order: "asc" }),
+  ]);
+
+  // Fallback sur les données mockées si pas d'events dans l'API
+  const mockAVenir = mockEvenements.filter((e) => !e.est_passe).slice(0, 3);
+  const prochainsEvenements = apiEvenements.length > 0 ? apiEvenements : mockAVenir;
   return (
     <>
       {/* Hero — fond clair avec motifs décoratifs */}

@@ -1,4 +1,4 @@
-import type { Recette, Evenement, User, ApiRecipe, ApiResponse } from "./types";
+import type { Recette, Evenement, User, ApiRecipe, ApiEvent, ApiResponse } from "./types";
 
 const BASE_URL = process.env.CHEFMATE_API_URL || "https://traiteur.zabar.fr/api/v1";
 const API_KEY = process.env.CHEFMATE_API_KEY || "";
@@ -120,16 +120,81 @@ export async function fetchRecette(id: string): Promise<Recette | null> {
   return mapRecipe(json.data);
 }
 
-// === Événements (pas encore dans l'API, stubs) ===
+// === Événements ===
 
-export async function fetchEvenements(
-  _params?: { limit?: number }
-): Promise<Evenement[]> {
-  return Promise.resolve([]);
+function mapEvent(e: ApiEvent): Evenement {
+  const today = new Date().toISOString().split("T")[0];
+  const est_passe = e.event_date ? e.event_date < today : false;
+
+  return {
+    id: e.id,
+    titre: e.name,
+    description: e.description,
+    date: e.event_date,
+    nombre_places: e.guest_count || 0,
+    presentation: e.presentation_text,
+    compte_rendu: e.report_text,
+    photo_url: resolveImageUrl(e.image_url) ||
+      resolveImageUrl(
+        e.event_images?.find((img) => img.image_type === "cover")?.image_url
+      ),
+    images: (e.event_images || [])
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((img) => ({
+        type: img.image_type,
+        url: resolveImageUrl(img.image_url)!,
+        caption: img.caption || undefined,
+      })),
+    temoignages: (e.event_testimonials || [])
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((t) => ({
+        auteur: t.author_name,
+        role: t.author_role || undefined,
+        texte: t.text,
+      })),
+    created_at: e.created_at,
+    est_passe,
+  };
 }
 
-export async function fetchEvenement(_id: string): Promise<Evenement | null> {
-  return Promise.resolve(null);
+export async function fetchEvenements(
+  params?: { limit?: number; offset?: number; date_from?: string; date_to?: string; sort_by?: string; sort_order?: string }
+): Promise<{ evenements: Evenement[]; total: number }> {
+  const searchParams = new URLSearchParams();
+  if (params?.limit) searchParams.set("limit", String(params.limit));
+  if (params?.offset) searchParams.set("offset", String(params.offset));
+  if (params?.date_from) searchParams.set("date_from", params.date_from);
+  if (params?.date_to) searchParams.set("date_to", params.date_to);
+  if (params?.sort_by) searchParams.set("sort_by", params.sort_by);
+  if (params?.sort_order) searchParams.set("sort_order", params.sort_order);
+
+  const res = await fetch(`${BASE_URL}/events?${searchParams}`, {
+    headers: headers(),
+    next: { revalidate: 30 },
+  });
+
+  if (!res.ok) {
+    console.error(`API events error: ${res.status} ${res.statusText}`);
+    return { evenements: [], total: 0 };
+  }
+
+  const json: ApiResponse<ApiEvent[]> = await res.json();
+  return {
+    evenements: json.data.map(mapEvent),
+    total: json.meta?.total ?? json.data.length,
+  };
+}
+
+export async function fetchEvenement(id: string): Promise<Evenement | null> {
+  const res = await fetch(`${BASE_URL}/events/${id}`, {
+    headers: headers(),
+    next: { revalidate: 30 },
+  });
+
+  if (!res.ok) return null;
+
+  const json: ApiResponse<ApiEvent> = await res.json();
+  return mapEvent(json.data);
 }
 
 // === Auth (pas utilisé pour cette phase) ===

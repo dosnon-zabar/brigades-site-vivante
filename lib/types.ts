@@ -19,13 +19,16 @@ export type Recette = {
 export type Evenement = {
   id: string;
   titre: string;
-  description: string;
-  date: string;
-  lieu: string;
+  description: string | null;
+  date: string | null;
   nombre_places: number;
-  inscrits: number;
-  statut: "a_venir" | "en_cours" | "passe";
+  presentation: string | null;
+  compte_rendu: string | null;
   photo_url?: string;
+  images: { type: "cover" | "report"; url: string; caption?: string }[];
+  temoignages: { auteur: string; role?: string; texte: string }[];
+  created_at: string;
+  est_passe: boolean;
 };
 
 export type Membre = {
@@ -77,6 +80,41 @@ export type ApiRecipe = {
     comment: string | null;
     unit: { id: string; name: string; abbreviation: string };
     aisle: { id: string; name: string; color: string } | null;
+  }[];
+};
+
+export type ApiEvent = {
+  id: string;
+  name: string;
+  description: string | null;
+  event_date: string | null;
+  guest_count: number | null;
+  image_url: string | null;
+  presentation_text: string | null;
+  report_text: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  team: { id: string; name: string } | null;
+  event_images: {
+    id: string;
+    image_type: "cover" | "report";
+    image_url: string;
+    caption: string | null;
+    copyright: string | null;
+    sort_order: number;
+  }[];
+  event_testimonials: {
+    id: string;
+    author_name: string;
+    author_role: string | null;
+    text: string;
+    sort_order: number;
+  }[];
+  event_recipes: {
+    id: string;
+    serving_count: number;
+    recette: { id: string; name: string; serving_count: number } | null;
   }[];
 };
 

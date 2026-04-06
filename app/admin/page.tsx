@@ -87,7 +87,7 @@ export default async function AdminDashboard() {
               >
                 <span className="text-brun">{e.titre}</span>
                 <span className="text-xs text-brun-light">
-                  {e.inscrits}/{e.nombre_places}
+                  {e.nombre_places} places
                 </span>
               </li>
             ))}
