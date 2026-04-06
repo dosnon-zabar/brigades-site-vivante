@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { fetchRecettes } from "@/lib/api";
 import { evenements } from "@/data/evenements";

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { fetchRecettes } from "@/lib/api";
 
 export default async function AdminRecettesPage() {

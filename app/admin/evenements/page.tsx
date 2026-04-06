@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { evenements } from "@/data/evenements";
 
 function formatDate(dateStr: string | null) {

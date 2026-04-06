@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { equipe } from "@/data/equipe";
 import ImageWithFallback from "@/components/ImageWithFallback";
 
