@@ -400,5 +400,32 @@ export async function fetchRoles(token: string): Promise<Role[]> {
   return json.data.filter((r) => assignable.includes(r.name.toLowerCase()));
 }
 
+// === Upload d'images (Bearer token) ===
+
+export async function uploadImage(
+  token: string,
+  file: File,
+  prefix: "recettes" | "events" | "equipe" = "events"
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("prefix", prefix);
+
+  const res = await fetch(`${BASE_URL}/upload-image`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  const json = await res.json();
+
+  if (!res.ok || !json.success) {
+    return { success: false, error: json.error || "Erreur lors de l'upload" };
+  }
+
+  // Résoudre l'URL relative en URL absolue
+  return { success: true, url: resolveImageUrl(json.url) };
+}
+
 // User type is used by lib/auth.ts, re-exported for convenience
 export type { User } from "./types";

@@ -3,6 +3,7 @@
 import { useState, useActionState } from "react";
 import Link from "next/link";
 import EventDatesEditor from "./EventDatesEditor";
+import ImageDropzone from "@/components/ImageDropzone";
 import type { Evenement, EventDate } from "@/lib/types";
 import { createEventAction, updateEventAction, type ActionState } from "./actions";
 
@@ -40,6 +41,7 @@ export default function EventForm({ event }: Props) {
 
   const [tab, setTab] = useState<Tab>("general");
   const [dates, setDates] = useState<EventDate[]>(event?.dates || []);
+  const [mainImage, setMainImage] = useState<string>(event?.photo_url || "");
   const [images, setImages] = useState<EditableImage[]>(event?.images || []);
   const [testimonials, setTestimonials] = useState<EditableTestimonial[]>(
     event?.temoignages || []
@@ -50,6 +52,16 @@ export default function EventForm({ event }: Props) {
 
   function addImage(type: "cover" | "report") {
     setImages([...images, { type, url: "", caption: "", sort_order: images.length }]);
+  }
+
+  function addUploadedImages(urls: string[], type: "cover" | "report") {
+    const newImages: EditableImage[] = urls.map((url, i) => ({
+      type,
+      url,
+      caption: "",
+      sort_order: images.length + i,
+    }));
+    setImages([...images, ...newImages]);
   }
 
   function updateImage(idx: number, patch: Partial<EditableImage>) {
@@ -209,15 +221,31 @@ export default function EventForm({ event }: Props) {
       {tab === "presentation" && (
         <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
           <div>
-            <label className={labelClass}>Image de couverture (URL)</label>
-            <input
-              name="image_url"
-              type="text"
-              defaultValue={event?.photo_url || ""}
-              className={inputClass}
-              placeholder="https://traiteur.zabar.fr/api/images/..."
+            <label className={labelClass}>Image de couverture</label>
+            <input type="hidden" name="image_url" value={mainImage} />
+            {mainImage && (
+              <div className="mb-3 relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={mainImage}
+                  alt="Couverture"
+                  className="w-full max-h-64 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMainImage("")}
+                  className="absolute top-2 right-2 bg-brun/80 text-white text-xs px-3 py-1 rounded-full hover:bg-brun"
+                >
+                  Retirer
+                </button>
+              </div>
+            )}
+            <ImageDropzone
+              prefix="events"
+              onUploaded={(urls) => setMainImage(urls[0])}
+              label={mainImage ? "Remplacer l'image de couverture" : "Glissez ou cliquez pour ajouter une image"}
             />
-            <p className="text-xs text-brun-light/60 mt-1">
+            <p className="text-xs text-brun-light/60 mt-2">
               Image principale affichée en haut de la page événement
             </p>
           </div>
@@ -234,14 +262,25 @@ export default function EventForm({ event }: Props) {
           </div>
 
           <div>
+            <label className={labelClass + " mb-3"}>Images additionnelles</label>
+            <div className="mb-3">
+              <ImageDropzone
+                prefix="events"
+                multiple
+                onUploaded={(urls) => addUploadedImages(urls, "cover")}
+                label="Ajouter une ou plusieurs images"
+              />
+            </div>
             <div className="flex items-center justify-between mb-3">
-              <label className={labelClass + " mb-0"}>Images additionnelles</label>
+              <span className="text-xs text-brun-light/60">
+                {coverImages.length} image{coverImages.length > 1 ? "s" : ""}
+              </span>
               <button
                 type="button"
                 onClick={() => addImage("cover")}
                 className="text-xs text-orange hover:text-orange-light font-semibold"
               >
-                + Ajouter
+                + Ajouter une URL manuellement
               </button>
             </div>
             {coverImages.length === 0 ? (
@@ -297,14 +336,25 @@ export default function EventForm({ event }: Props) {
           </div>
 
           <div>
+            <label className={labelClass + " mb-3"}>Photos du compte-rendu</label>
+            <div className="mb-3">
+              <ImageDropzone
+                prefix="events"
+                multiple
+                onUploaded={(urls) => addUploadedImages(urls, "report")}
+                label="Ajouter une ou plusieurs photos"
+              />
+            </div>
             <div className="flex items-center justify-between mb-3">
-              <label className={labelClass + " mb-0"}>Photos du compte-rendu</label>
+              <span className="text-xs text-brun-light/60">
+                {reportImages.length} photo{reportImages.length > 1 ? "s" : ""}
+              </span>
               <button
                 type="button"
                 onClick={() => addImage("report")}
                 className="text-xs text-orange hover:text-orange-light font-semibold"
               >
-                + Ajouter
+                + Ajouter une URL manuellement
               </button>
             </div>
             {reportImages.length === 0 ? (
