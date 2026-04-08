@@ -1,9 +1,9 @@
 import type { Recette, Evenement, EventStatus, TeamMember, Role, ApiRecipe, ApiEvent, ApiResponse } from "./types";
 
-const BASE_URL = process.env.CHEFMATE_API_URL || "https://traiteur.zabar.fr/api/v1";
+const BASE_URL = process.env.CHEFMATE_API_URL || "https://chefmate-admin.zabar.fr/api/v1";
 const API_KEY = process.env.CHEFMATE_API_KEY || "";
 const TEAM_ID = process.env.CHEFMATE_TEAM_ID || "";
-const CDN_BASE = "https://traiteur.zabar.fr";
+const CDN_BASE = "https://chefmate-admin.zabar.fr";
 
 function headers(): HeadersInit {
   return {

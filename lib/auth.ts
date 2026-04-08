@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-const API_URL = process.env.CHEFMATE_API_URL || "https://traiteur.zabar.fr/api/v1";
+const API_URL = process.env.CHEFMATE_API_URL || "https://chefmate-admin.zabar.fr/api/v1";
 const TEAM_ID = process.env.CHEFMATE_TEAM_ID || "";
 const COOKIE_NAME = "vivante_session";
 
