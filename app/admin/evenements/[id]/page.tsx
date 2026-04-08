@@ -39,7 +39,8 @@ export default async function EditEvenementPage({ params }: Props) {
         Modifier {evenement.titre}
       </h1>
 
-      <EventForm event={evenement} />
+      {/* Key forcé sur updated_at pour remounter le form proprement après un "save_and_stay" */}
+      <EventForm key={`${evenement.id}-${evenement.updated_at}`} event={evenement} />
     </div>
   );
 }

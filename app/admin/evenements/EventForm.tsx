@@ -2,6 +2,7 @@
 
 import { useState, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import EventDatesEditor from "./EventDatesEditor";
 import ImageManager, { type ManagedImage } from "./ImageManager";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -45,7 +46,12 @@ export default function EventForm({ event }: Props) {
   const action = isEdit ? updateEventAction : createEventAction;
   const [state, formAction, pending] = useActionState<ActionState, FormData>(action, null);
 
-  const [tab, setTab] = useState<Tab>("general");
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") as Tab | null) || "general";
+  const validTabs: Tab[] = ["general", "presentation", "compte-rendu"];
+  const [tab, setTab] = useState<Tab>(
+    validTabs.includes(initialTab) ? initialTab : "general"
+  );
   const [dates, setDates] = useState<EventDate[]>(event?.dates || []);
   const [testimonials, setTestimonials] = useState<EditableTestimonial[]>(
     event?.temoignages || []
@@ -318,6 +324,9 @@ export default function EventForm({ event }: Props) {
         </div>
       )}
 
+      {/* Tab courant pour le server action (mode "rester sur la page") */}
+      <input type="hidden" name="current_tab" value={tab} />
+
       {/* Boutons */}
       <div className="flex items-center justify-between pt-4">
         <Link
@@ -326,17 +335,32 @@ export default function EventForm({ event }: Props) {
         >
           Annuler
         </Link>
-        <button
-          type="submit"
-          disabled={pending}
-          className="px-6 py-2.5 bg-orange text-white font-semibold rounded-lg hover:bg-orange-light transition-colors text-sm disabled:opacity-50"
-        >
-          {pending
-            ? "Enregistrement..."
-            : isEdit
-            ? "Enregistrer"
-            : "Créer l'événement (brouillon)"}
-        </button>
+        <div className="flex items-center gap-3">
+          {isEdit && (
+            <button
+              type="submit"
+              name="intent"
+              value="save_and_stay"
+              disabled={pending}
+              className="px-6 py-2.5 bg-white border-2 border-orange text-orange font-semibold rounded-lg hover:bg-orange/5 transition-colors text-sm disabled:opacity-50"
+            >
+              {pending ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          )}
+          <button
+            type="submit"
+            name="intent"
+            value="save_and_quit"
+            disabled={pending}
+            className="px-6 py-2.5 bg-orange text-white font-semibold rounded-lg hover:bg-orange-light transition-colors text-sm disabled:opacity-50"
+          >
+            {pending
+              ? "Enregistrement..."
+              : isEdit
+              ? "Enregistrer et quitter"
+              : "Créer l'événement (brouillon)"}
+          </button>
+        </div>
       </div>
     </form>
   );

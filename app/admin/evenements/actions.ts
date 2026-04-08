@@ -110,6 +110,15 @@ export async function updateEventAction(
 
   revalidatePath("/admin/evenements");
   revalidatePath(`/admin/evenements/${eventId}`);
+
+  // Intent : save_and_stay → rester sur la page d'édition, dans l'onglet courant
+  // save_and_quit (défaut) → retour à la liste
+  const intent = formData.get("intent") as string;
+  if (intent === "save_and_stay") {
+    const currentTab = (formData.get("current_tab") as string) || "general";
+    redirect(`/admin/evenements/${eventId}?tab=${encodeURIComponent(currentTab)}`);
+  }
+
   redirect("/admin/evenements");
 }
 

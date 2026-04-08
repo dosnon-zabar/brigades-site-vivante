@@ -19,6 +19,7 @@ export const evenements: Evenement[] = [
     images: [],
     temoignages: [],
     created_at: "2026-01-15T10:00:00Z",
+    updated_at: "2026-01-15T10:00:00Z",
     est_passe: false,
   },
   {
@@ -39,6 +40,7 @@ export const evenements: Evenement[] = [
     images: [],
     temoignages: [],
     created_at: "2026-02-01T10:00:00Z",
+    updated_at: "2026-02-01T10:00:00Z",
     est_passe: false,
   },
   {
@@ -59,6 +61,7 @@ export const evenements: Evenement[] = [
     images: [],
     temoignages: [],
     created_at: "2026-02-15T10:00:00Z",
+    updated_at: "2026-02-15T10:00:00Z",
     est_passe: false,
   },
 ];

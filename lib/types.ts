@@ -47,6 +47,7 @@ export type Evenement = {
   images: { id?: string; type: "cover" | "report"; url: string; caption?: string; sort_order?: number }[];
   temoignages: { id?: string; auteur: string; role?: string; texte: string; sort_order?: number }[];
   created_at: string;
+  updated_at: string;
   est_passe: boolean;
 };
 

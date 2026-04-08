@@ -190,6 +190,7 @@ function mapEvent(e: ApiEvent): Evenement {
         sort_order: t.sort_order,
       })),
     created_at: e.created_at,
+    updated_at: e.updated_at,
     est_passe,
   };
 }
