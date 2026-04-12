@@ -20,10 +20,7 @@ function resolveImageUrl(url?: string | null): string | undefined {
 
 // === Site Config ===
 
-let _siteConfigCache: SiteConfig | null = null;
-
 export async function fetchSiteConfig(): Promise<SiteConfig | null> {
-  if (_siteConfigCache) return _siteConfigCache;
   try {
     const res = await fetch(`${BASE_URL}/site-config`, {
       headers: headers(),
@@ -31,7 +28,6 @@ export async function fetchSiteConfig(): Promise<SiteConfig | null> {
     });
     if (!res.ok) return null;
     const json: ApiResponse<SiteConfig> = await res.json();
-    _siteConfigCache = json.data;
     return json.data;
   } catch {
     return null;
