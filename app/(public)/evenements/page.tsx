@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { fetchEvenements, fetchSiteConfig } from "@/lib/api";
 import EvenementCard from "@/components/EvenementCard";
 import { EtoileOrange } from "@/components/Motifs";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await fetchSiteConfig();
+  return {
+    title: config?.events_seo_title ?? "Événements",
+    description: config?.events_seo_desc ?? undefined,
+    openGraph: config?.events_seo_image ? { images: [config.events_seo_image] } : undefined,
+  };
+}
 
 export default async function EvenementsPage() {
   const today = new Date().toISOString().split("T")[0];

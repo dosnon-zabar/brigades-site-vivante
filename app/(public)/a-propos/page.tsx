@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { equipe } from "@/data/equipe";
 import { fetchSiteConfig } from "@/lib/api";
 import ImageWithFallback from "@/components/ImageWithFallback";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await fetchSiteConfig();
+  return {
+    title: config?.about_seo_title ?? "À propos",
+    description: config?.about_seo_desc ?? undefined,
+    openGraph: config?.about_seo_image ? { images: [config.about_seo_image] } : undefined,
+  };
+}
 
 export default async function AProposPage() {
   const config = await fetchSiteConfig();

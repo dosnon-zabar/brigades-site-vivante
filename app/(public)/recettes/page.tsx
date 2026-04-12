@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import { fetchRecettes, fetchSiteConfig } from "@/lib/api";
 import RecetteCard from "@/components/RecetteCard";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await fetchSiteConfig();
+  return {
+    title: config?.recipes_seo_title ?? "Nos recettes",
+    description: config?.recipes_seo_desc ?? undefined,
+    openGraph: config?.recipes_seo_image ? { images: [config.recipes_seo_image] } : undefined,
+  };
+}
 
 export default async function RecettesPage() {
   const [config, { recettes }] = await Promise.all([
