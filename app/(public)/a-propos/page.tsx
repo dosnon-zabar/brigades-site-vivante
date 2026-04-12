@@ -51,8 +51,13 @@ export default async function AProposPage() {
                     { title: "Convivialité", text: "La table est un lieu de rencontre. Nos événements sont ouverts à toutes et tous, sans distinction, dans un esprit de partage." },
                     { title: "Transmission", text: "Partager les gestes, les recettes et les histoires. La cuisine est un patrimoine vivant qui se transmet de main en main." },
                   ]
-              ).map((val, i) => (
+              ).map((val: { title: string; text: string; icon?: string }, i: number) => (
                 <div key={i} className="text-center">
+                  {val.icon && (
+                    <div className="w-16 h-16 mx-auto mb-4">
+                      <img src={val.icon} alt="" className="w-full h-full object-contain" />
+                    </div>
+                  )}
                   <h3 className="font-serif text-xl text-brun mb-2">{val.title}</h3>
                   <p className="text-sm text-brun-light leading-relaxed">{val.text}</p>
                 </div>
@@ -88,6 +93,9 @@ export default async function AProposPage() {
                   )}
                   <div className="p-5">
                     <h3 className="font-serif text-xl text-brun">{membre.name}</h3>
+                    {(membre as { role?: string }).role && (
+                      <p className="text-sm text-terracotta font-medium mt-1">{(membre as { role?: string }).role}</p>
+                    )}
                     {membre.text && (
                       <p className="text-sm text-brun-light mt-3 leading-relaxed">{membre.text}</p>
                     )}

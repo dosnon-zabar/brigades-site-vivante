@@ -28,7 +28,30 @@ export async function fetchSiteConfig(): Promise<SiteConfig | null> {
     });
     if (!res.ok) return null;
     const json: ApiResponse<SiteConfig> = await res.json();
-    return json.data;
+    const data = json.data;
+    if (!data) return null;
+
+    // Resolve relative image URLs to absolute
+    if (data.home_hero_image) data.home_hero_image = resolveImageUrl(data.home_hero_image) ?? null;
+    if (data.home_seo_image) data.home_seo_image = resolveImageUrl(data.home_seo_image) ?? null;
+    if (data.recipes_seo_image) data.recipes_seo_image = resolveImageUrl(data.recipes_seo_image) ?? null;
+    if (data.events_seo_image) data.events_seo_image = resolveImageUrl(data.events_seo_image) ?? null;
+    if (data.about_seo_image) data.about_seo_image = resolveImageUrl(data.about_seo_image) ?? null;
+    if (data.about_values) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.about_values = data.about_values.map((v: any) => ({
+        ...v,
+        icon: resolveImageUrl(v.icon) ?? undefined,
+      }));
+    }
+    if (data.about_team_members) {
+      data.about_team_members = data.about_team_members.map((m) => ({
+        ...m,
+        image_url: resolveImageUrl(m.image_url) ?? undefined,
+      }));
+    }
+
+    return data;
   } catch {
     return null;
   }
