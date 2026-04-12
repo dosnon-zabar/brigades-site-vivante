@@ -1,8 +1,7 @@
-import type { Recette, Evenement, EventStatus, TeamMember, Role, ApiRecipe, ApiEvent, ApiResponse } from "./types";
+import type { Recette, Evenement, ApiRecipe, ApiEvent, ApiResponse } from "./types";
 
 const BASE_URL = process.env.CHEFMATE_API_URL || "https://chefmate-admin.zabar.fr/api/v1";
 const API_KEY = process.env.CHEFMATE_API_KEY || "";
-const TEAM_ID = process.env.CHEFMATE_TEAM_ID || "";
 const CDN_BASE = "https://chefmate-admin.zabar.fr";
 
 function headers(): HeadersInit {
@@ -197,8 +196,7 @@ function mapEvent(e: ApiEvent): Evenement {
 }
 
 export async function fetchEvenements(
-  params?: { limit?: number; offset?: number; date_from?: string; date_to?: string; sort_by?: string; sort_order?: string; status?: string },
-  options?: { token?: string; cache?: RequestCache }
+  params?: { limit?: number; offset?: number; date_from?: string; date_to?: string; sort_by?: string; sort_order?: string; status?: string }
 ): Promise<{ evenements: Evenement[]; total: number }> {
   const searchParams = new URLSearchParams();
   if (params?.limit) searchParams.set("limit", String(params.limit));
@@ -209,15 +207,10 @@ export async function fetchEvenements(
   if (params?.sort_order) searchParams.set("sort_order", params.sort_order);
   if (params?.status) searchParams.set("status", params.status);
 
-  const requestHeaders = options?.token ? bearerHeaders(options.token) : headers();
-  const fetchOptions: RequestInit = { headers: requestHeaders };
-  if (options?.cache === "no-store") {
-    fetchOptions.cache = "no-store";
-  } else {
-    (fetchOptions as { next?: { revalidate: number } }).next = { revalidate: 30 };
-  }
-
-  const res = await fetch(`${BASE_URL}/events?${searchParams}`, fetchOptions);
+  const res = await fetch(`${BASE_URL}/events?${searchParams}`, {
+    headers: headers(),
+    next: { revalidate: 30 },
+  });
 
   if (!res.ok) {
     console.error(`API events error: ${res.status} ${res.statusText}`);
@@ -231,270 +224,14 @@ export async function fetchEvenements(
   };
 }
 
-export async function fetchEvenement(id: string, options?: { token?: string; cache?: RequestCache }): Promise<Evenement | null> {
-  const requestHeaders = options?.token ? bearerHeaders(options.token) : headers();
-  const fetchOptions: RequestInit = { headers: requestHeaders };
-  if (options?.cache === "no-store") {
-    fetchOptions.cache = "no-store";
-  } else {
-    (fetchOptions as { next?: { revalidate: number } }).next = { revalidate: 30 };
-  }
-
-  const res = await fetch(`${BASE_URL}/events/${id}`, fetchOptions);
+export async function fetchEvenement(id: string): Promise<Evenement | null> {
+  const res = await fetch(`${BASE_URL}/events/${id}`, {
+    headers: headers(),
+    next: { revalidate: 30 },
+  });
 
   if (!res.ok) return null;
 
   const json: ApiResponse<ApiEvent> = await res.json();
   return mapEvent(json.data);
 }
-
-// === Mutations Event (Bearer token requis) ===
-
-export type EventInput = {
-  name: string;
-  slug?: string;
-  description?: string | null;
-  event_date?: string | null;
-  guest_count?: number;
-  presentation_text?: string | null;
-  report_text?: string | null;
-  notes?: string | null;
-  status?: EventStatus;
-  team_id: string;
-  dates?: {
-    start_datetime: string;
-    duration_minutes?: number | null;
-    guest_count?: number;
-    location?: string | null;
-    reservation_open?: boolean;
-    reservation_url?: string | null;
-    sort_order?: number;
-  }[];
-  images?: {
-    image_type: "cover" | "report";
-    image_url: string;
-    caption?: string | null;
-    sort_order?: number;
-  }[];
-  testimonials?: {
-    author_name: string;
-    author_role?: string | null;
-    text: string;
-    sort_order?: number;
-  }[];
-};
-
-export async function createEvenement(
-  token: string,
-  data: EventInput
-): Promise<{ success: boolean; id?: string; error?: string }> {
-  const res = await fetch(`${BASE_URL}/events`, {
-    method: "POST",
-    headers: bearerHeaders(token),
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) return { success: false, error: json.error || "Erreur lors de la création" };
-  return { success: true, id: json.data?.id };
-}
-
-export async function updateEvenement(
-  token: string,
-  id: string,
-  data: Partial<EventInput>
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/events/${id}`, {
-    method: "PATCH",
-    headers: bearerHeaders(token),
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) return { success: false, error: json.error || "Erreur lors de la modification" };
-  return { success: true };
-}
-
-export async function deleteEvenement(
-  token: string,
-  id: string
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/events/${id}`, {
-    method: "DELETE",
-    headers: bearerHeaders(token),
-  });
-  if (!res.ok) {
-    const json = await res.json();
-    return { success: false, error: json.error || "Erreur lors de la suppression" };
-  }
-  return { success: true };
-}
-
-// === Membres d'équipe (auth Bearer token) ===
-
-function bearerHeaders(token: string): HeadersInit {
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-}
-
-export async function fetchTeamMembers(token: string): Promise<TeamMember[]> {
-  const res = await fetch(`${BASE_URL}/teams/${TEAM_ID}/members`, {
-    headers: bearerHeaders(token),
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  const json: ApiResponse<TeamMember[]> = await res.json();
-  return json.data;
-}
-
-export async function createTeamMember(
-  token: string,
-  data: { first_name: string; last_name: string; email: string; password: string; phone?: string; role_id?: string }
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/teams/${TEAM_ID}/members`, {
-    method: "POST",
-    headers: bearerHeaders(token),
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) return { success: false, error: json.error || "Erreur lors de la création" };
-  return { success: true };
-}
-
-export async function updateTeamMember(
-  token: string,
-  userId: string,
-  data: Record<string, unknown>
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/teams/${TEAM_ID}/members/${userId}`, {
-    method: "PATCH",
-    headers: bearerHeaders(token),
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) return { success: false, error: json.error || "Erreur lors de la modification" };
-  return { success: true };
-}
-
-export async function removeTeamMember(
-  token: string,
-  userId: string
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/teams/${TEAM_ID}/members/${userId}`, {
-    method: "DELETE",
-    headers: bearerHeaders(token),
-  });
-  if (!res.ok) {
-    const json = await res.json();
-    return { success: false, error: json.error || "Erreur lors de la suppression" };
-  }
-  return { success: true };
-}
-
-export async function fetchRoles(token: string): Promise<Role[]> {
-  const res = await fetch(`${BASE_URL}/roles`, {
-    headers: bearerHeaders(token),
-    cache: "no-store",
-  });
-  if (!res.ok) return [];
-  const json: ApiResponse<Role[]> = await res.json();
-  // Ne retourner que les rôles assignables depuis Vivante
-  const assignable = ["contributeur", "traiteur", "team manager"];
-  return json.data.filter((r) => assignable.includes(r.name.toLowerCase()));
-}
-
-// === Gestion granulaire des images d'un event ===
-
-export type EventImagePayload = {
-  image_type: "cover" | "report";
-  image_url: string;
-  caption?: string;
-  copyright?: string;
-};
-
-export type EventImageRow = {
-  id: string;
-  event_id: string;
-  image_type: "cover" | "report";
-  image_url: string;
-  caption: string | null;
-  copyright: string | null;
-  sort_order: number;
-};
-
-export async function addEventImage(
-  token: string,
-  eventId: string,
-  data: EventImagePayload
-): Promise<{ success: boolean; image?: EventImageRow; error?: string }> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/images`, {
-    method: "POST",
-    headers: bearerHeaders(token),
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) return { success: false, error: json.error || "Erreur ajout image" };
-  return { success: true, image: json.data };
-}
-
-export async function updateEventImage(
-  token: string,
-  eventId: string,
-  imageId: string,
-  data: { caption?: string; copyright?: string; sort_order?: number }
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/images/${imageId}`, {
-    method: "PATCH",
-    headers: bearerHeaders(token),
-    body: JSON.stringify(data),
-  });
-  const json = await res.json();
-  if (!res.ok) return { success: false, error: json.error || "Erreur modification image" };
-  return { success: true };
-}
-
-export async function deleteEventImage(
-  token: string,
-  eventId: string,
-  imageId: string
-): Promise<{ success: boolean; error?: string }> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/images/${imageId}`, {
-    method: "DELETE",
-    headers: bearerHeaders(token),
-  });
-  if (!res.ok) {
-    const json = await res.json();
-    return { success: false, error: json.error || "Erreur suppression image" };
-  }
-  return { success: true };
-}
-
-// === Upload d'images (Bearer token) ===
-
-export async function uploadImage(
-  token: string,
-  file: File,
-  prefix: "recettes" | "events" | "equipe" = "events"
-): Promise<{ success: boolean; url?: string; error?: string }> {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("prefix", prefix);
-
-  const res = await fetch(`${BASE_URL}/upload-image`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  });
-
-  const json = await res.json();
-
-  if (!res.ok || !json.success) {
-    return { success: false, error: json.error || "Erreur lors de l'upload" };
-  }
-
-  // Résoudre l'URL relative en URL absolue
-  return { success: true, url: resolveImageUrl(json.url) };
-}
-
-// User type is used by lib/auth.ts, re-exported for convenience
-export type { User } from "./types";
