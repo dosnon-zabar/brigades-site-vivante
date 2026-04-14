@@ -27,14 +27,14 @@ export default function RecetteCard({ recette }: Props) {
         </h3>
         <div className="flex flex-wrap gap-1.5 mt-3">
           {recette.saison && recette.saison.split(/,\s*/).map((s) => (
-            <span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-jaune/20 text-brun font-medium">
+            <span key={s} className="text-[11px] px-2 py-0.5 rounded-full uppercase bg-jaune/20 text-brun font-medium">
               {s.trim()}
             </span>
           ))}
           {recette.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="text-[11px] px-2 py-0.5 rounded-full bg-vert-eau/15 text-vert-eau font-medium"
+              className="text-[11px] px-2 py-0.5 rounded-full uppercase bg-vert-eau/15 text-vert-eau font-medium"
             >
               {tag}
             </span>

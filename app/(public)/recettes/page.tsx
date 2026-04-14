@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { fetchRecettes, fetchSiteConfig } from "@/lib/api";
-import RecetteCard from "@/components/RecetteCard";
+import RecettesFiltrables from "@/components/RecettesFiltrables";
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await fetchSiteConfig();
@@ -17,10 +17,6 @@ export default async function RecettesPage() {
     fetchRecettes({ limit: 50, status: "publiee", sort_by: "created_at", sort_order: "desc" }),
   ]);
 
-  const saisons = [
-    "toutes",
-    ...new Set(recettes.map((r) => r.saison)),
-  ];
   const allTags = [...new Set(recettes.flatMap((r) => r.tags))];
 
   return (
@@ -42,56 +38,7 @@ export default async function RecettesPage() {
           )}
         </div>
 
-        {/* Filtres (UI statique) */}
-        {saisons.length > 1 && (
-          <div className="mb-8 space-y-4">
-            <div>
-              <span className="text-sm font-medium text-brun mr-3">
-                Saison :
-              </span>
-              {saisons.map((saison) => (
-                <button
-                  key={saison}
-                  className={`text-sm px-3 py-1 rounded-full mr-2 mb-2 transition-colors ${
-                    saison === "toutes"
-                      ? "bg-terracotta text-ivoire"
-                      : "bg-stone-100 text-brun-light hover:bg-argile/20"
-                  }`}
-                >
-                  {saison === "toutes" ? "Toutes" : saison}
-                </button>
-              ))}
-            </div>
-            {allTags.length > 0 && (
-              <div>
-                <span className="text-sm font-medium text-brun mr-3">
-                  Tags :
-                </span>
-                {allTags.map((tag) => (
-                  <button
-                    key={tag}
-                    className="text-sm px-3 py-1 rounded-full mr-2 mb-2 bg-stone-100 text-brun-light hover:bg-sauge/10 transition-colors"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Grille */}
-        {recettes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recettes.map((recette) => (
-              <RecetteCard key={recette.id} recette={recette} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-brun-light text-center py-12">
-            Aucune recette publiée pour le moment.
-          </p>
-        )}
+        <RecettesFiltrables recettes={recettes} allTags={allTags} />
       </div>
     </div>
   );

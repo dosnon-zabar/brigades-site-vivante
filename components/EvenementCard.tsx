@@ -62,7 +62,7 @@ export default function EvenementCard({ evenement, variant = "upcoming" }: Props
             {evenement.titre}
           </h3>
           {evenement.compte_rendu && (
-            <p className="text-xs text-orange font-medium mt-2">
+            <p className="text-xs text-orange font-medium uppercase mt-2">
               Voir le compte-rendu &rarr;
             </p>
           )}
@@ -100,7 +100,7 @@ export default function EvenementCard({ evenement, variant = "upcoming" }: Props
               {evenement.nombre_places} places
             </span>
           )}
-          <span className="text-xs text-orange font-medium ml-auto">
+          <span className="text-xs text-orange font-medium uppercase ml-auto">
             En savoir plus &rarr;
           </span>
         </div>

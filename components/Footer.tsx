@@ -26,7 +26,13 @@ export default function Footer({ config }: { config: SiteConfig | null }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-2xl text-white mb-3 uppercase tracking-wide" style={{ fontFamily: "Nunito, sans-serif" }}>{title}</h3>
+            <div className="flex items-center gap-3 mb-3">
+              <img src="/logo-vivante-white.png" alt={title} className="h-12 w-auto" />
+              <div className="leading-tight">
+                <span className="text-2xl text-white uppercase tracking-[0.15em]" style={{ fontFamily: "Nunito, sans-serif" }}>{title}</span>
+                <span className="block text-[9px] uppercase tracking-[0.25em] text-white/70" style={{ fontFamily: "Nunito, sans-serif" }}>{subtitle}</span>
+              </div>
+            </div>
             {footerHtml ? (
               <div className="text-sm leading-relaxed text-white" dangerouslySetInnerHTML={{ __html: footerHtml }} />
             ) : (

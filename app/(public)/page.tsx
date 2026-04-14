@@ -46,7 +46,7 @@ export default async function Accueil() {
         )}
 
         <div className={`relative max-w-6xl mx-auto px-4 sm:px-6 text-center ${config?.home_hero_image ? "text-ivoire" : ""}`}>
-          <h1 className={`text-5xl sm:text-7xl font-normal uppercase tracking-tight ${config?.home_hero_image ? "text-ivoire drop-shadow-lg" : "text-brun"}`} style={{ fontFamily: "Nunito, sans-serif" }}>
+          <h1 className={`text-5xl sm:text-7xl font-normal uppercase tracking-[0.15em] ${config?.home_hero_image ? "text-ivoire drop-shadow-lg" : "text-brun"}`} style={{ fontFamily: "Nunito, sans-serif" }}>
             {title}
           </h1>
           <p className={`mt-2 text-sm uppercase tracking-[0.3em] flex items-center justify-center gap-3 ${config?.home_hero_image ? "text-ivoire/80" : "text-brun-light"}`} style={{ fontFamily: "Nunito, sans-serif" }}>
@@ -60,10 +60,10 @@ export default async function Accueil() {
             </p>
           )}
           {homeIntro ? (
-            <div className={`mt-14 text-xl mx-auto ${config?.home_hero_image ? "text-ivoire/90" : "text-brun-light"}`} style={{ fontFamily: "DM Sans, sans-serif", fontSize: "20px", lineHeight: "140%", maxWidth: "650px" }}
+            <div className={`my-14 mx-auto ${config?.home_hero_image ? "text-ivoire/90" : "text-brun-light"}`} style={{ fontFamily: "DM Sans, sans-serif", fontSize: "18px", lineHeight: "150%", maxWidth: "550px" }}
               dangerouslySetInnerHTML={{ __html: homeIntro }} />
           ) : (
-            <p className={`mt-14 text-xl mx-auto ${config?.home_hero_image ? "text-ivoire/90" : "text-brun-light"}`} style={{ fontFamily: "DM Sans, sans-serif", fontSize: "20px", lineHeight: "140%", maxWidth: "650px" }}>
+            <p className={`my-14 mx-auto ${config?.home_hero_image ? "text-ivoire/90" : "text-brun-light"}`} style={{ fontFamily: "DM Sans, sans-serif", fontSize: "18px", lineHeight: "150%", maxWidth: "550px" }}>
               Cuisine vivante, festive et populaire
               <br />
               au c&oelig;ur du {baseline}
@@ -72,13 +72,13 @@ export default async function Accueil() {
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/evenements"
-              className="inline-flex items-center justify-center px-7 py-3.5 bg-vert-eau text-white font-semibold rounded-full hover:bg-vert-eau-light transition-colors shadow-sm"
+              className="inline-flex items-center justify-center px-7 py-3.5 bg-vert-eau text-white font-semibold uppercase rounded-full hover:bg-vert-eau-light transition-colors shadow-sm"
             >
-              Nos prochains événements
+              Nos événements
             </Link>
             <Link
               href="/recettes"
-              className={`inline-flex items-center justify-center px-7 py-3.5 border-2 font-semibold rounded-full transition-colors ${config?.home_hero_image ? "border-ivoire/40 text-ivoire hover:bg-ivoire/10" : "border-brun/20 text-brun hover:bg-brun/5"}`}
+              className={`inline-flex items-center justify-center px-7 py-3.5 border-2 font-semibold uppercase rounded-full transition-colors ${config?.home_hero_image ? "border-ivoire/40 text-ivoire hover:bg-ivoire/10" : "border-brun/20 text-brun hover:bg-brun/5"}`}
             >
               Découvrir nos recettes
             </Link>
@@ -105,9 +105,9 @@ export default async function Accueil() {
               </div>
               <Link
                 href="/evenements"
-                className="hidden sm:inline-flex text-sm font-semibold text-orange hover:text-orange-light transition-colors"
+                className="hidden sm:inline-flex text-sm font-semibold text-orange uppercase hover:text-orange-light transition-colors"
               >
-                Voir tout &rarr;
+                Tous les événements &rarr;
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -118,9 +118,9 @@ export default async function Accueil() {
             <div className="sm:hidden mt-6 text-center">
               <Link
                 href="/evenements"
-                className="text-sm font-semibold text-orange"
+                className="text-sm font-semibold text-orange uppercase"
               >
-                Voir tous les événements &rarr;
+                Tous les événements &rarr;
               </Link>
             </div>
           </div>
@@ -142,9 +142,9 @@ export default async function Accueil() {
               </div>
               <Link
                 href="/evenements"
-                className="hidden sm:inline-flex text-sm font-semibold text-orange hover:text-orange-light transition-colors"
+                className="hidden sm:inline-flex text-sm font-semibold text-orange uppercase hover:text-orange-light transition-colors"
               >
-                Voir tous les événements &rarr;
+                Tous les événements &rarr;
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -155,9 +155,9 @@ export default async function Accueil() {
             <div className="sm:hidden mt-6 text-center">
               <Link
                 href="/evenements"
-                className="text-sm font-semibold text-orange"
+                className="text-sm font-semibold text-orange uppercase"
               >
-                Voir tous les événements &rarr;
+                Tous les événements &rarr;
               </Link>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default async function Accueil() {
             </div>
             <Link
               href="/recettes"
-              className="hidden sm:inline-flex text-sm font-semibold text-orange hover:text-orange-light transition-colors"
+              className="hidden sm:inline-flex text-sm font-semibold text-orange uppercase hover:text-orange-light transition-colors"
             >
               Toutes les recettes &rarr;
             </Link>
@@ -195,7 +195,7 @@ export default async function Accueil() {
           <div className="sm:hidden mt-6 text-center">
             <Link
               href="/recettes"
-              className="text-sm font-semibold text-orange"
+              className="text-sm font-semibold text-orange uppercase"
             >
               Toutes les recettes &rarr;
             </Link>
@@ -222,7 +222,7 @@ export default async function Accueil() {
           )}
           <Link
             href="/a-propos"
-            className="inline-flex items-center justify-center mt-8 px-7 py-3.5 bg-vert-eau text-white font-semibold rounded-full hover:bg-vert-eau-light transition-colors"
+            className="inline-flex items-center justify-center mt-8 px-7 py-3.5 bg-vert-eau text-white font-semibold uppercase rounded-full hover:bg-vert-eau-light transition-colors shadow-sm"
           >
             En savoir plus
           </Link>

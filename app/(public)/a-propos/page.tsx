@@ -150,7 +150,7 @@ export default async function AProposPage() {
             {(config?.contact_email) && (
               <a
                 href={`mailto:${config.contact_email}`}
-                className="inline-flex items-center justify-center mt-8 px-7 py-3.5 bg-vert-eau text-white font-semibold rounded-full hover:bg-vert-eau-light transition-colors"
+                className="inline-flex items-center justify-center mt-8 px-7 py-3.5 bg-vert-eau text-white font-semibold uppercase rounded-full hover:bg-vert-eau-light transition-colors shadow-sm"
               >
                 {config.contact_email}
               </a>
