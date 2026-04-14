@@ -22,7 +22,7 @@ export default function RecetteCard({ recette }: Props) {
         />
       </div>
       <div className="p-4">
-        <h3 className="font-serif text-3xl text-brun group-hover:text-orange transition-colors">
+        <h3 className="font-serif text-4xl text-brun group-hover:text-orange transition-colors">
           {recette.nom}
         </h3>
         <div className="flex flex-wrap gap-1.5 mt-3">

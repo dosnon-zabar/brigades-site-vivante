@@ -95,7 +95,7 @@ export default async function Accueil() {
             <div className="flex items-end justify-between mb-12">
               <div className="flex items-center gap-3">
                 <div>
-                  <h2 className="font-serif text-5xl font-bold text-brun">
+                  <h2 className="font-serif text-6xl text-brun">
                     {config?.home_events_title ?? "Prochains événements"}
                   </h2>
                   <p className="mt-2 text-brun-light">
@@ -133,7 +133,7 @@ export default async function Accueil() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="flex items-end justify-between mb-10">
               <div>
-                <h2 className="font-serif text-5xl font-bold text-brun-light">
+                <h2 className="font-serif text-6xl text-brun-light">
                   {config?.home_past_events_title ?? "Événements passés"}
                 </h2>
                 <p className="mt-2 text-brun-light/70">
@@ -172,7 +172,7 @@ export default async function Accueil() {
           <div className="flex items-end justify-between mb-12">
             <div className="flex items-center gap-3">
               <div>
-                <h2 className="font-serif text-5xl font-bold text-brun">
+                <h2 className="font-serif text-6xl text-brun">
                   {config?.home_recipes_title ?? "Nos recettes"}
                 </h2>
                 <p className="mt-2 text-brun-light">
@@ -209,7 +209,7 @@ export default async function Accueil() {
         <img src="/picto-soleil.png" alt="" className="absolute -bottom-14 -right-14 w-44 sm:w-56 opacity-30 pointer-events-none" />
         <img src="/picto-onde.png" alt="" className="absolute top-12 left-[8%] w-14 sm:w-20 opacity-30 pointer-events-none -rotate-12 hidden sm:block" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="font-serif text-5xl font-bold text-brun">
+          <h2 className="font-serif text-6xl text-brun">
             {config?.home_about_title ?? "Qui sommes-nous ?"}
           </h2>
           {config?.home_about_text ? (

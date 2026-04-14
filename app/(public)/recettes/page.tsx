@@ -30,7 +30,7 @@ export default async function RecettesPage() {
       <img src="/picto-onde.png" alt="" className="absolute top-[33%] right-[6%] w-12 sm:w-16 opacity-20 pointer-events-none -rotate-12 hidden sm:block" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
         <div className="mb-10">
-          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-brun">
+          <h1 className="font-serif text-5xl sm:text-6xl text-brun">
             {config?.recipes_page_title ?? "Nos recettes"}
           </h1>
           {config?.recipes_intro ? (

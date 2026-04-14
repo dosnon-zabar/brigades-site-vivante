@@ -193,7 +193,7 @@ export default async function EvenementDetailPage({ params }: Props) {
               {/* Dates */}
               {evenement.dates.length > 0 ? (
                 <div className="bg-white rounded-xl p-5">
-                  <h3 className="font-serif text-3xl text-brun mb-3">
+                  <h3 className="font-serif text-4xl text-brun mb-3">
                     {evenement.dates.length > 1 ? "Dates" : "Date"}
                   </h3>
                   <ul className="space-y-4">
@@ -230,7 +230,7 @@ export default async function EvenementDetailPage({ params }: Props) {
                 </div>
               ) : (
                 <div className="bg-white rounded-xl p-5">
-                  <h3 className="font-serif text-3xl text-brun mb-3">Infos pratiques</h3>
+                  <h3 className="font-serif text-4xl text-brun mb-3">Infos pratiques</h3>
                   <ul className="space-y-3 text-sm">
                     <li className="flex justify-between">
                       <span className="text-brun-light">Date</span>

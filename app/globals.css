@@ -98,6 +98,11 @@ h1, h2, h3, h4 {
   font-weight: 600;
 }
 
+.about-content strong,
+.about-content b {
+  color: #8EC8B0 !important;
+}
+
 .rich-content em,
 .rich-content i {
   font-style: italic;

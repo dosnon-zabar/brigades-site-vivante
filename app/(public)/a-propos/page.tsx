@@ -40,12 +40,12 @@ export default async function AProposPage() {
           <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl text-brun">{config?.about_page_title ?? "À propos"}</h1>
         )}
         {config?.about_text ? (
-          <div className="rich-content mt-8 space-y-6 text-brun-light leading-relaxed text-lg" style={{ maxWidth: "650px" }}
+          <div className="rich-content about-content mt-8 space-y-6 text-brun-light leading-relaxed text-lg" style={{ maxWidth: "650px" }}
             dangerouslySetInnerHTML={{ __html: config.about_text }} />
         ) : (
           <div className="mt-8 space-y-6 text-brun-light leading-relaxed text-lg" style={{ maxWidth: "650px" }}>
             <p>
-              <strong className="text-brun">Vivante</strong> est né d&apos;une
+              <strong className="text-vert-eau">Vivante</strong> est né d&apos;une
               envie simple : remettre la cuisine au centre du village. Pas la
               cuisine des magazines, ni celle des restaurants étoilés — la cuisine
               populaire, celle qui se transmet, qui se partage, qui rassemble
@@ -59,7 +59,7 @@ export default async function AProposPage() {
       {config?.about_values_enabled !== false && (
         <section className="bg-vert-eau-light/30 py-16">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <h2 className="font-serif text-5xl font-bold text-brun text-center mb-12">
+            <h2 className="font-serif text-6xl text-brun text-center mb-12">
               {config?.about_values_title ?? "Nos valeurs"}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -77,7 +77,7 @@ export default async function AProposPage() {
                       <img src={val.icon} alt="" className="w-full h-full object-contain" />
                     </div>
                   )}
-                  <h3 className="font-serif text-3xl text-brun mb-2">{val.title}</h3>
+                  <h3 className="font-serif text-4xl text-brun mb-2">{val.title}</h3>
                   <p className="text-sm text-brun-light leading-relaxed">{val.text}</p>
                 </div>
               ))}
@@ -90,7 +90,7 @@ export default async function AProposPage() {
       {config?.about_team_enabled !== false && (
         <section className="py-16 sm:py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <h2 className="font-serif text-5xl font-bold text-brun text-center mb-12">
+            <h2 className="font-serif text-6xl text-brun text-center mb-12">
               {config?.about_team_title ?? "L'équipe"}
             </h2>
             {(() => {
@@ -114,7 +114,7 @@ export default async function AProposPage() {
                     </div>
                   )}
                   <div className="p-5">
-                    <h3 className="font-serif text-3xl text-brun">{membre.name}</h3>
+                    <h3 className="font-serif text-4xl text-brun">{membre.name}</h3>
                     {(membre as { role?: string }).role && (
                       <p className="text-sm text-terracotta font-medium mt-1">{(membre as { role?: string }).role}</p>
                     )}
@@ -137,7 +137,7 @@ export default async function AProposPage() {
           <img src="/picto-soleil.png" alt="" className="absolute -bottom-14 -right-14 w-44 sm:w-56 opacity-30 pointer-events-none" />
           <img src="/picto-onde.png" alt="" className="absolute top-12 left-[8%] w-14 sm:w-20 opacity-30 pointer-events-none -rotate-12 hidden sm:block" />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="font-serif text-5xl font-bold text-brun">
+            <h2 className="font-serif text-6xl text-brun">
               {config?.about_contact_title ?? "Nous contacter"}
             </h2>
             {config?.about_contact_text ? (

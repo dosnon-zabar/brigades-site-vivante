@@ -58,7 +58,7 @@ export default function EvenementCard({ evenement, variant = "upcoming" }: Props
           />
         </div>
         <div className="p-4">
-          <h3 className="font-serif text-3xl text-brun group-hover:text-orange transition-colors">
+          <h3 className="font-serif text-4xl text-brun group-hover:text-orange transition-colors">
             {evenement.titre}
           </h3>
           {evenement.compte_rendu && (
@@ -86,7 +86,7 @@ export default function EvenementCard({ evenement, variant = "upcoming" }: Props
         />
       </div>
       <div className="p-5">
-        <h3 className="font-serif text-3xl text-brun group-hover:text-orange transition-colors">
+        <h3 className="font-serif text-4xl text-brun group-hover:text-orange transition-colors">
           {evenement.titre}
         </h3>
         {evenement.description && (

@@ -29,7 +29,7 @@ export default async function EvenementsPage() {
       <img src="/picto-soleil.png" alt="" className="absolute bottom-16 right-[3%] w-32 sm:w-44 opacity-20 pointer-events-none hidden sm:block" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
         <div className="mb-12">
-          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-brun">
+          <h1 className="font-serif text-5xl sm:text-6xl text-brun">
             {config?.events_page_title ?? "Événements"}
           </h1>
           {config?.events_intro ? (
