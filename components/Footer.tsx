@@ -45,11 +45,11 @@ export default function Footer({ config }: { config: SiteConfig | null }) {
           <div>
             <h4 className="font-serif text-2xl text-white mb-3">Navigation</h4>
             <ul className="space-y-2 text-sm">
-              {config?.recipes_page_enabled !== false && (
-                <li><Link href="/recettes" className="hover:text-jaune transition-colors">Recettes</Link></li>
-              )}
               {config?.events_page_enabled !== false && (
                 <li><Link href="/evenements" className="hover:text-jaune transition-colors">Événements</Link></li>
+              )}
+              {config?.recipes_page_enabled !== false && (
+                <li><Link href="/recettes" className="hover:text-jaune transition-colors">Recettes</Link></li>
               )}
               {config?.about_page_enabled !== false && (
                 <li><Link href="/a-propos" className="hover:text-jaune transition-colors">À propos</Link></li>

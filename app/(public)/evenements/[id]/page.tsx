@@ -89,12 +89,11 @@ export default async function EvenementDetailPage({ params }: Props) {
             {/* Compte-rendu */}
             {evenement.compte_rendu && evenement.compte_rendu.replace(/<[^>]*>/g, "").trim() && (
               <section>
-                <div className="bg-white rounded-xl p-6">
-                  <div
-                    className="rich-content text-brun-light leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: evenement.compte_rendu }}
-                  />
-                </div>
+                <div
+                  className="rich-content emphasis-green text-brun-light leading-relaxed text-lg"
+                  style={{ maxWidth: "650px" }}
+                  dangerouslySetInnerHTML={{ __html: evenement.compte_rendu }}
+                />
               </section>
             )}
 
@@ -130,13 +129,11 @@ export default async function EvenementDetailPage({ params }: Props) {
             {/* Description si pas de compte-rendu */}
             {!evenement.compte_rendu && evenement.description && (
               <section>
-                <h2 className="font-serif text-2xl text-brun mb-4">Description</h2>
-                <div className="bg-white rounded-xl p-6">
-                  <div
-                    className="rich-content text-brun-light leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: evenement.description }}
-                  />
-                </div>
+                <div
+                  className="rich-content emphasis-green text-brun-light leading-relaxed text-lg"
+                  style={{ maxWidth: "650px" }}
+                  dangerouslySetInnerHTML={{ __html: evenement.description }}
+                />
               </section>
             )}
           </div>
@@ -147,26 +144,22 @@ export default async function EvenementDetailPage({ params }: Props) {
               {/* Présentation */}
               {evenement.presentation && (
                 <section>
-                  <h2 className="font-serif text-2xl text-brun mb-4">Présentation</h2>
-                  <div className="bg-white rounded-xl p-6">
-                    <div
-                      className="rich-content text-brun-light leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: evenement.presentation }}
-                    />
-                  </div>
+                  <div
+                    className="rich-content emphasis-green text-brun-light leading-relaxed text-lg"
+                    style={{ maxWidth: "650px" }}
+                    dangerouslySetInnerHTML={{ __html: evenement.presentation }}
+                  />
                 </section>
               )}
 
               {/* Description */}
               {evenement.description && (
                 <section>
-                  <h2 className="font-serif text-2xl text-brun mb-4">Description</h2>
-                  <div className="bg-white rounded-xl p-6">
-                    <div
-                      className="rich-content text-brun-light leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: evenement.description }}
-                    />
-                  </div>
+                  <div
+                    className="rich-content emphasis-green text-brun-light leading-relaxed text-lg"
+                    style={{ maxWidth: "650px" }}
+                    dangerouslySetInnerHTML={{ __html: evenement.description }}
+                  />
                 </section>
               )}
 

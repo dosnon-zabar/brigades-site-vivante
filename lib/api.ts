@@ -91,6 +91,8 @@ function mapRecipe(r: ApiRecipe): Recette {
     est_publique: r.is_public,
     tags: r.recipe_tags.map((t) => t.tag.name),
     saison: r.recipe_seasons.map((s) => s.season.name).join(", ") || "toutes saisons",
+    presentation: r.presentation,
+    portion_type: r.portion_type?.name ?? null,
     auteur: r.creator
       ? { id: r.creator.id, nom: `${r.creator.first_name} ${r.creator.last_name}` }
       : { id: "", nom: "Inconnu" },
@@ -111,7 +113,8 @@ function mapRecipe(r: ApiRecipe): Recette {
     etapes: r.recipe_steps
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((s) => ({
-        texte: stripHtml(s.text),
+        titre: s.title,
+        texte: s.text,
         image_url: resolveImageUrl(s.image_url),
       })),
     photo_url: resolveImageUrl(r.images?.[0]?.url),

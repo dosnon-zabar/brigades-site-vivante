@@ -78,9 +78,11 @@ export type Recette = {
   tags: string[];
   saison: string;
   auteur: { id: string; nom: string };
+  presentation?: string | null;
+  portion_type?: string | null;
   ingredients: { nom: string; quantite: number; unite: string }[];
   instructions: string;
-  etapes: { texte: string; image_url?: string }[];
+  etapes: { titre?: string | null; texte: string; image_url?: string }[];
   photo_url?: string;
   created_at: string;
 };
@@ -133,6 +135,8 @@ export type ApiRecipe = {
   id: string;
   name: string;
   slug: string | null;
+  presentation: string | null;
+  portion_type: { id: string; name: string } | null;
   serving_count: number;
   status: string | null;
   is_public: boolean;
