@@ -162,10 +162,10 @@ export default async function EvenementDetailPage({ params }: Props) {
             {/* Témoignages */}
             {evenement.temoignages.length > 0 && (
               <section>
-                <h2 className="font-serif text-2xl text-brun mb-4">Témoignages</h2>
+                <h2 className="font-serif text-4xl text-brun mb-6">Témoignages</h2>
                 <div className="space-y-4">
                   {evenement.temoignages.map((t, i) => (
-                    <div key={i} className="bg-white rounded-xl p-6 border-l-4 border-orange/30">
+                    <div key={i} className="pl-6 border-l-2 border-vert-eau/50">
                       <p className="text-brun-light leading-relaxed italic">
                         &ldquo;{t.texte}&rdquo;
                       </p>

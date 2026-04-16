@@ -121,6 +121,7 @@ function mapRecipe(r: ApiRecipe): Recette {
         image_url: resolveImageUrl(s.image_url),
       })),
     photo_url: resolveImageUrl(r.images?.[0]?.url),
+    photos: (r.images ?? []).map((img) => resolveImageUrl(img.url)).filter(Boolean) as string[],
     created_at: r.created_at,
   };
 }

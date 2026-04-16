@@ -4,6 +4,7 @@ import Link from "next/link";
 import { fetchRecette, fetchSiteConfig } from "@/lib/api";
 import { formatIngredientNatural } from "@/lib/format-ingredient";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import ImageSlider from "@/components/ImageSlider";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -63,16 +64,8 @@ export default async function RecetteDetailPage({ params }: Props) {
           Retour aux recettes
         </Link>
 
-        {recette.photo_url && (
-          <div className="relative aspect-[16/9] rounded-xl overflow-hidden mb-8">
-            <ImageWithFallback
-              src={recette.photo_url}
-              alt={recette.nom}
-              fill
-              className="object-cover"
-              fallbackText={recette.nom}
-            />
-          </div>
+        {(recette.photos?.length ?? 0) > 0 && (
+          <ImageSlider images={recette.photos!} alt={recette.nom} />
         )}
 
         <h1 className="font-serif text-4xl sm:text-5xl text-brun">

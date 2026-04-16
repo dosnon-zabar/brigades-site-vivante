@@ -87,6 +87,7 @@ export type Recette = {
   instructions: string;
   etapes: { titre?: string | null; texte: string; image_url?: string }[];
   photo_url?: string;
+  photos?: string[];
   created_at: string;
 };
 
