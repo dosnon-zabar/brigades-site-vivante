@@ -176,11 +176,11 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
           <div>
             <h1
               id="shopping-list-title"
-              className="font-serif text-2xl text-brun leading-tight"
+              className="font-serif text-3xl text-brun leading-tight"
             >
               Liste de courses
             </h1>
-            <h2 className="font-serif text-base text-brun-light mt-1">
+            <h2 className="font-serif text-xl text-brun-light mt-1">
               {recette.nom}
             </h2>
           </div>
