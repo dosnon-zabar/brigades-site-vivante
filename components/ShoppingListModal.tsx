@@ -163,30 +163,38 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 print:bg-white print:static print:p-0"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
       role="dialog"
       aria-modal="true"
-      aria-label="Liste de courses"
+      aria-labelledby="shopping-list-title"
     >
-      <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 print:shadow-none print:rounded-none print:max-h-none print:max-w-none">
-        <div className="flex items-center justify-between mb-4 print:mb-6">
-          <h3 className="font-serif text-xl text-brun">Liste de courses</h3>
+      <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h1
+              id="shopping-list-title"
+              className="font-serif text-2xl text-brun leading-tight"
+            >
+              Liste de courses
+            </h1>
+            <h2 className="font-serif text-base text-brun-light mt-1">
+              {recette.nom}
+            </h2>
+          </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="text-brun-light hover:text-brun text-lg leading-none print:hidden"
+            className="text-brun-light hover:text-brun text-lg leading-none flex-shrink-0"
           >
             ✕
           </button>
         </div>
 
-        <p className="text-xs text-brun-light mb-4">{recette.nom}</p>
-
-        <div className="bg-creme rounded-lg p-4 mb-5 print:hidden">
+        <div className="bg-creme rounded-lg p-4 mb-5">
           <label className="block text-sm font-medium text-brun mb-2">
             Recette pour {recette.nombre_parts} {portionLabel} — adapter
             pour
@@ -225,10 +233,6 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
             )}
           </div>
         </div>
-
-        <p className="hidden print:block text-sm text-brun mb-4">
-          Pour {portions} {portionLabel}
-        </p>
 
         <div className="space-y-5">
           {grouped.length === 0 ? (
@@ -273,18 +277,11 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
           )}
         </div>
 
-        <div className="mt-6 flex gap-2 print:hidden">
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="flex-1 py-2.5 border border-brun/10 text-brun rounded-lg hover:bg-creme transition-colors text-sm font-medium"
-          >
-            Imprimer
-          </button>
+        <div className="mt-6">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 bg-terracotta text-white rounded-lg hover:bg-terracotta-dark transition-colors text-sm font-medium"
+            className="w-full py-2.5 bg-vert-eau text-white rounded-lg hover:bg-vert-eau-light transition-colors text-sm font-medium"
           >
             Fermer
           </button>

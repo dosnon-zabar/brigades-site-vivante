@@ -28,7 +28,7 @@ export default function ShoppingListButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-6 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-terracotta text-white rounded-lg hover:bg-terracotta-dark transition-colors text-sm font-medium print:hidden"
+        className="mt-6 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-vert-eau text-white rounded-lg hover:bg-vert-eau-light transition-colors text-sm font-medium"
       >
         <svg
           className="w-4 h-4"
