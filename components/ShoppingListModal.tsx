@@ -77,9 +77,23 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
   }, [aisles])
 
   /**
-   * Résultat : tableau de sections, chaque section = un rayon-feuille
-   * (ou "Autres"), avec ses ingrédients déjà fusionnés. Sections triées
-   * dans l'ordre de course : parent.sort_order → own.sort_order → nom.
+   * Résultat : tableau de sections. Chaque section = un rayon PARENT
+   * (ou le rayon lui-même s'il n'a pas de parent, ou "Autres"). Les
+   * items sont triés à l'intérieur par (sous-rayon.sort_order,
+   * sous-rayon.nom) pour que ceux du même sous-rayon restent
+   * contigus, même si le sous-rayon n'apparait pas à l'écran.
+   *
+   * Exemple :
+   *   Primeurs (parent)
+   *     – 200 g d'oignons       (sous-rayon Légumes sort=1)
+   *     – 2 gousses d'ail       (sous-rayon Légumes sort=1)
+   *     – 10 g de persil        (sous-rayon Herbes sort=3)
+   *   Crémerie (parent)
+   *     – 100 g de beurre       (sous-rayon Beurre sort=1)
+   *     – 2 œufs                (sous-rayon Œufs sort=6)
+   *
+   * Les couleurs et noms affichés sont ceux du PARENT (ou du rayon
+   * lui-même s'il est déjà top-level).
    */
   const grouped = useMemo(() => {
     type Merged = {
@@ -123,41 +137,131 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
       }
     }
 
-    // 2. Group by rayon id (leaf).
-    const byRayon = new Map<
-      string,
-      { rayon: Aisle | null; items: Merged[] }
-    >()
+    /**
+     * Résout le rayon PARENT d'affichage pour un leaf aisle.
+     * - leaf avec parent        → parent
+     * - leaf sans parent        → le leaf lui-même (top-level)
+     * - leaf introuvable / null → null (bucket "Autres")
+     */
+    function resolveDisplayParent(leafId: string | null): Aisle | null {
+      if (!leafId) return null
+      const leaf = aislesById.get(leafId)
+      if (!leaf) return null
+      if (!leaf.parent_id) return leaf
+      return aislesById.get(leaf.parent_id) ?? leaf
+    }
+
+    // 2. Group by display parent (ou "Autres" si pas de rayon).
+    type Bucket = {
+      parent: Aisle | null
+      items: Array<Merged & { leaf: Aisle | null }>
+    }
+    const byParent = new Map<string, Bucket>()
     for (const m of mergedMap.values()) {
-      const rayon = m.rayonId ? aislesById.get(m.rayonId) ?? null : null
-      const key = rayon?.id ?? "__autres__"
-      const bucket = byRayon.get(key) ?? { rayon, items: [] }
-      bucket.items.push(m)
-      byRayon.set(key, bucket)
+      const parent = resolveDisplayParent(m.rayonId)
+      const leaf = m.rayonId ? aislesById.get(m.rayonId) ?? null : null
+      const key = parent?.id ?? "__autres__"
+      const bucket = byParent.get(key) ?? { parent, items: [] }
+      bucket.items.push({ ...m, leaf })
+      byParent.set(key, bucket)
     }
 
-    // 3. Sort key for each rayon: (parent.sort_order, own.sort_order, own.name).
-    //    Rayons without parent use their own sort_order as the "parent" slot
-    //    so top-level aisles can interleave naturally with children of other
-    //    parents. "Autres" always last.
-    function sortKey(rayon: Aisle | null): [number, number, string] {
-      if (!rayon) return [Number.MAX_SAFE_INTEGER, 0, ""]
-      const parent = rayon.parent_id ? aislesById.get(rayon.parent_id) : null
-      const parentSort = parent
-        ? parent.sort_order ?? 0
-        : rayon.sort_order ?? 0
-      const ownSort = parent ? rayon.sort_order ?? 0 : 0
-      return [parentSort, ownSort, rayon.name]
+    // 3. Tri des items DANS un bucket : par (leaf.sort_order, leaf.nom).
+    //    Les items du même sous-rayon restent contigus — c'est le but.
+    for (const b of byParent.values()) {
+      b.items.sort((a, b) => {
+        const aSort = a.leaf?.sort_order ?? 0
+        const bSort = b.leaf?.sort_order ?? 0
+        if (aSort !== bSort) return aSort - bSort
+        const aName = a.leaf?.name ?? ""
+        const bName = b.leaf?.name ?? ""
+        return aName.localeCompare(bName, "fr") || a.nom.localeCompare(b.nom, "fr")
+      })
     }
 
-    return [...byRayon.values()].sort((a, b) => {
-      const ka = sortKey(a.rayon)
-      const kb = sortKey(b.rayon)
-      if (ka[0] !== kb[0]) return ka[0] - kb[0]
-      if (ka[1] !== kb[1]) return ka[1] - kb[1]
-      return ka[2].localeCompare(kb[2], "fr")
+    // 4. Tri des buckets : parent.sort_order, "Autres" toujours en dernier.
+    return [...byParent.values()].sort((a, b) => {
+      if (!a.parent && !b.parent) return 0
+      if (!a.parent) return 1
+      if (!b.parent) return -1
+      const aSort = a.parent.sort_order ?? 0
+      const bSort = b.parent.sort_order ?? 0
+      if (aSort !== bSort) return aSort - bSort
+      return a.parent.name.localeCompare(b.parent.name, "fr")
     })
   }, [recette.ingredients, aislesById, multiplier])
+
+  // État du formulaire d'envoi email — inline dans la modal (pas de
+  // sous-popin). Se révèle au clic sur "Envoyer par email".
+  const [emailMode, setEmailMode] = useState<"idle" | "form" | "sending" | "sent" | "error">("idle")
+  const [emailTo, setEmailTo] = useState("")
+  const [emailError, setEmailError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (open) {
+      setEmailMode("idle")
+      setEmailTo("")
+      setEmailError(null)
+    }
+  }, [open])
+
+  async function handleSendEmail(e: React.FormEvent) {
+    e.preventDefault()
+    setEmailError(null)
+    const to = emailTo.trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+      setEmailError("Adresse email invalide.")
+      return
+    }
+
+    setEmailMode("sending")
+
+    // Sérialise les sections déjà formatées — mêmes groupes parents et
+    // même ordre que le DOM (tri par sous-rayon interne préservé).
+    const sections = grouped.map((g) => ({
+      rayon: g.parent?.name ?? "Autres",
+      color: g.parent?.color ?? null,
+      items: g.items.map((ing) => ({
+        line:
+          ing.scaledQty > 0
+            ? formatIngredientNatural(
+                ing.nom,
+                ing.scaledQty,
+                ing.unite,
+                ing.unite_pluriel,
+                ing.nom_pluriel,
+              )
+            : ing.nom,
+        note: ing.comments.length > 0 ? ing.comments.join(" ; ") : null,
+      })),
+    }))
+
+    try {
+      const res = await fetch("/api/shopping-list/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to_email: to,
+          recipe_name: recette.nom,
+          recipe_url:
+            typeof window !== "undefined" ? window.location.href : "",
+          portions,
+          portion_label: portionLabel,
+          groups: sections,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.success) {
+        setEmailError(data.error || "Envoi échoué, réessaye plus tard.")
+        setEmailMode("error")
+        return
+      }
+      setEmailMode("sent")
+    } catch {
+      setEmailError("Erreur réseau")
+      setEmailMode("error")
+    }
+  }
 
   if (!open) return null
 
@@ -241,16 +345,16 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
             </p>
           ) : (
             grouped.map((g) => (
-              <section key={g.rayon?.id ?? "__autres__"}>
-                <h4 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brun-light mb-2">
-                  {g.rayon?.color && (
+              <section key={g.parent?.id ?? "__autres__"}>
+                <h4 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-brun mb-2">
+                  {g.parent?.color && (
                     <span
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: g.rayon.color }}
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: g.parent.color }}
                       aria-hidden
                     />
                   )}
-                  {g.rayon?.name ?? "Autres"}
+                  {g.parent?.name ?? "Autres"}
                 </h4>
                 <ul className="space-y-1.5">
                   {g.items.map((ing, i) => (
@@ -277,15 +381,102 @@ export default function ShoppingListModal({ open, onClose, recette, aisles }: Pr
           )}
         </div>
 
-        <div className="mt-6">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full py-2.5 bg-vert-eau text-white rounded-lg hover:bg-vert-eau-light transition-colors text-sm font-medium"
-          >
-            Fermer
-          </button>
-        </div>
+        {/* Bloc email — 3 états :
+            - idle : 2 boutons Envoyer par email / Fermer
+            - form : input email + Envoyer / Annuler
+            - sent : message succès + Fermer
+         */}
+        {emailMode === "sent" ? (
+          <div className="mt-6 space-y-3">
+            <div className="flex items-start gap-2 bg-vert-eau-light/30 border border-vert-eau/30 rounded-lg px-3 py-2.5">
+              <svg
+                className="w-5 h-5 text-vert-eau flex-shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <div className="text-sm text-brun">
+                Liste envoyée à <strong>{emailTo}</strong>. Vérifie ton
+                dossier spam si tu ne la reçois pas dans quelques minutes.
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full py-2.5 bg-vert-eau text-white rounded-lg hover:bg-vert-eau-light transition-colors text-sm font-medium"
+            >
+              Fermer
+            </button>
+          </div>
+        ) : emailMode === "form" || emailMode === "sending" || emailMode === "error" ? (
+          <form onSubmit={handleSendEmail} className="mt-6 space-y-3">
+            <label className="block text-sm font-medium text-brun">
+              Envoyer cette liste par email
+            </label>
+            <input
+              type="email"
+              required
+              autoFocus
+              value={emailTo}
+              onChange={(e) => {
+                setEmailTo(e.target.value)
+                setEmailError(null)
+                if (emailMode === "error") setEmailMode("form")
+              }}
+              placeholder="votre@email.com"
+              className="w-full px-3 py-2.5 rounded-lg border border-brun/10 bg-creme text-sm text-brun placeholder:text-brun-light/40 focus:outline-none focus:ring-2 focus:ring-vert-eau/30"
+              disabled={emailMode === "sending"}
+            />
+            {emailError && (
+              <p className="text-xs text-rose">{emailError}</p>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmailMode("idle")
+                  setEmailError(null)
+                }}
+                disabled={emailMode === "sending"}
+                className="flex-1 py-2.5 border border-brun/10 text-brun rounded-lg hover:bg-creme transition-colors text-sm font-medium disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={emailMode === "sending"}
+                className="flex-1 py-2.5 bg-vert-eau text-white rounded-lg hover:bg-vert-eau-light transition-colors text-sm font-medium disabled:opacity-60"
+              >
+                {emailMode === "sending" ? "Envoi…" : "Envoyer"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="mt-6 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setEmailMode("form")}
+              className="flex-1 py-2.5 border border-brun/10 text-brun rounded-lg hover:bg-creme transition-colors text-sm font-medium"
+            >
+              Envoyer par email
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 bg-vert-eau text-white rounded-lg hover:bg-vert-eau-light transition-colors text-sm font-medium"
+            >
+              Fermer
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
